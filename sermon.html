@@ -3,21 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <title>อ่านคำเทศนา</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&family=Anuphan:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+
+<meta property="og:title" content="">
+<meta property="og:description" content="คำเทศนาจากคริสตจักร">
+<meta property="og:image" content="">
+<meta property="og:url" content="">
 </head>
 <body>
 
-<h1 id="title"></h1>
-<p id="meta"></p>
-<iframe id="docFrame" loading="lazy"></iframe>
+<div class="reader">
+
+  <div class="reader-toolbar">
+    <button onclick="fontSmaller()">A−</button>
+    <button onclick="fontBigger()">A+</button>
+    <button onclick="toggleDark()">🌙</button>
+
+    <button class="btn line" onclick="shareLine()">LINE</button>
+    <button class="btn fb" onclick="shareFacebook()">Facebook</button>
+    <button class="btn share" onclick="shareNative()">แชร์</button>
+    <button class="btn print" onclick="downloadPDF()">PDF</button>
+  </div>
+
+  <article class="reader-content">
+    <h1 id="title"></h1>
+    <p id="meta"></p>
+    <iframe id="docFrame" loading="lazy"></iframe>
+  </article>
+
+</div>
 
 <script>
 const p = new URLSearchParams(location.search);
-document.getElementById("title").textContent = p.get("title") || "";
-document.getElementById("meta").textContent =
-  (p.get("date")||"") + " • " + (p.get("preacher")||"");
-document.getElementById("docFrame").src =
-  (p.get("doc")||"") + "?embedded=true";
+const title = p.get("title") || "";
+const date = p.get("date") || "";
+const preacher = p.get("preacher") || "";
+const doc = p.get("doc") || "";
+const youtube = p.get("youtube") || "";
+
+document.getElementById("title").textContent = title;
+document.getElementById("meta").textContent = date + " • " + preacher;
+document.getElementById("docFrame").src = doc + "?embedded=true&v=" + Date.now();
+
+// OG TAG
+document.querySelector('meta[property="og:title"]').content = title;
+document.querySelector('meta[property="og:url"]').content = window.location.href;
+
+if (youtube) {
+  const m = youtube.match(/(youtu\.be\/|v=)([^&]+)/);
+  if (m && m[2]) {
+    document.querySelector('meta[property="og:image"]').content =
+      `https://img.youtube.com/vi/${m[2]}/hqdefault.jpg`;
+  }
+}
+
+// FONT SCALE
+let fontScale = 1;
+function fontBigger() {
+  fontScale += 0.1;
+  docFrame.style.transform = `scale(${fontScale})`;
+  docFrame.style.transformOrigin = "top left";
+}
+function fontSmaller() {
+  fontScale = Math.max(0.9, fontScale - 0.1);
+  docFrame.style.transform = `scale(${fontScale})`;
+}
+
+// DARK MODE
+function toggleDark() {
+  document.body.classList.toggle("dark");
+}
+
+// SHARE
+function shareLine() {
+  const url = encodeURIComponent(window.location.href);
+  window.open(`https://social-plugins.line.me/lineit/share?url=${url}`, "_blank");
+}
+function shareFacebook() {
+  const url = encodeURIComponent(window.location.href);
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
+}
+function shareNative() {
+  if (navigator.share) {
+    navigator.share({ title, text: title, url: window.location.href });
+  } else {
+    shareLine();
+  }
+}
+
+// PDF
+function downloadPDF() {
+  window.print();
+}
 </script>
 
 </body>
