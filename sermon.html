@@ -7,28 +7,35 @@
 </head>
 <body>
 
-<div class="container">
-  <h1 id="title"></h1>
-  <p id="meta"></p>
-  <div id="content" class="content">กำลังโหลด...</div>
+<div class="reader">
+  <article class="reader-content">
+    <h1 id="title"></h1>
+    <p id="meta"></p>
+    <div id="content" class="sermon-content">กำลังโหลดเนื้อหา…</div>
+  </article>
 </div>
 
 <script>
-const p = new URLSearchParams(location.search);
-document.getElementById("title").textContent = p.get("title") || "";
-document.getElementById("meta").textContent =
-  (p.get("date") || "") + " • " + (p.get("preacher") || "");
+const p=new URLSearchParams(location.search);
+title.textContent=p.get("title")||"";
+meta.textContent=(p.get("date")||"")+" • "+(p.get("preacher")||"");
 
-const docUrl = p.get("doc");
+const doc=p.get("doc");
 
-// ใช้ Google Docs export เป็น text (ตัดบรรทัดได้ 100%)
-fetch(docUrl.replace(/\/edit.*$/, '/export?format=txt'))
-  .then(r => r.text())
-  .then(text => {
-    const lines = text.split(/\n{2,}/);
-    document.getElementById("content").innerHTML =
-      lines.map(p => `<p>${p.replace(/\n/g,'<br>')}</p>`).join("");
-  });
+fetch(doc+"?embedded=true")
+.then(r=>r.text())
+.then(html=>{
+  const dom=new DOMParser().parseFromString(html,"text/html");
+  const body=dom.querySelector(".doc-content")||dom.body;
+
+  body.querySelectorAll("script,style").forEach(e=>e.remove());
+  body.querySelectorAll("*").forEach(el=>el.removeAttribute("style"));
+
+  document.getElementById("content").innerHTML=body.innerHTML;
+})
+.catch(()=>{
+  document.getElementById("content").textContent="โหลดเนื้อหาไม่สำเร็จ";
+});
 </script>
 
 </body>
