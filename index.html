@@ -2,35 +2,24 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>คำเทศนาล่าสุด</title>
+<title>ส่งคำอธิษฐาน</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>คำเทศนาล่าสุด</h1>
-<div id="latest" class="grid"></div>
-<a class="more" href="sermons.html">ดูคำเทศนาย้อนหลังทั้งหมด →</a>
+<form id="prayerForm" class="form">
+  <h2>🙏 ส่งคำอธิษฐาน</h2>
 
-<script src="data.js"></script>
-<script>
-function ytID(url){
-  if(!url) return "";
-  const m=url.match(/(youtu\.be\/|v=)([^&]+)/);
-  return m?m[2]:"";
-}
+  <label>ชื่อ (ไม่บังคับ)</label>
+  <input name="name" placeholder="พิมพ์ชื่อของคุณ">
 
-loadSermons().then(data=>{
-  const box=document.getElementById("latest");
-  data.slice(0,3).forEach(s=>{
-    const id=ytID(s.youtube);
-    box.innerHTML+=`
-    <a class="card" href="sermon.html?title=${encodeURIComponent(s.title)}&date=${encodeURIComponent(s.date)}&preacher=${encodeURIComponent(s.preacher)}&doc=${encodeURIComponent(s.doc)}&youtube=${encodeURIComponent(s.youtube)}">
-      ${id?`<img src="https://img.youtube.com/vi/${id}/hqdefault.jpg">`:""}
-      <h3>${s.title}</h3>
-      <p>${s.date} • ${s.preacher}</p>
-    </a>`;
-  });
-});
-</script>
+  <label>คำอธิษฐาน</label>
+  <textarea name="prayer" required placeholder="พิมพ์คำอธิษฐานของคุณ"></textarea>
+
+  <button type="submit">ส่งคำอธิษฐาน</button>
+  <p id="msg"></p>
+</form>
+
+<script src="script.js"></script>
 </body>
 </html>
