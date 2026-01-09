@@ -6,15 +6,10 @@ async function loadSermons() {
   const text = await res.text();
   const json = JSON.parse(text.substring(47).slice(0, -2));
 
-  return json.table.rows
-    .map(r => ({
-      date: r.c[0]?.v ?? "",
-      title: r.c[1]?.v ?? "",
-      preacher: r.c[2]?.v ?? "",
-      youtube: r.c[3]?.v ?? "",
-      show: r.c[4]?.v ?? "",
-      doc: r.c[5]?.v ?? ""
-    }))
-    .filter(r => (r.show || "").toString().toLowerCase().trim() === "yes")
-    .reverse();
+  return json.table.rows.map(r => ({
+    date: r.c[0]?.v || "",
+    title: r.c[1]?.v || "",
+    preacher: r.c[2]?.v || "",
+    doc: r.c[5]?.v || ""
+  })).reverse();
 }
