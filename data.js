@@ -8,13 +8,13 @@ async function loadSermons() {
 
   return json.table.rows
     .map(r => ({
-      date: r.c[0]?.v || "",
-      title: r.c[1]?.v || "",
-      preacher: r.c[2]?.v || "",
-      youtube: r.c[3]?.v || "",
-      show: r.c[4]?.v || "",
-      doc: r.c[5]?.v || ""
+      date: r.c[0]?.v ?? "",
+      title: r.c[1]?.v ?? "",
+      preacher: r.c[2]?.v ?? "",
+      youtube: r.c[3]?.v ?? "",
+      show: r.c[4]?.v ?? "",
+      doc: r.c[5]?.v ?? ""
     }))
-    .filter(r => (r.show || "").toLowerCase().trim() === "yes")
+    .filter(r => (r.show || "").toString().toLowerCase().trim() === "yes")
     .reverse();
 }

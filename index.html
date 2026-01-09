@@ -13,15 +13,32 @@
 
 <script src="data.js"></script>
 <script>
+function formatDate(value) {
+  if (typeof value === "string" && value.startsWith("Date")) {
+    const parts = value.match(/\d+/g);
+    const d = new Date(parts[0], parts[1], parts[2]);
+    return d.toLocaleDateString("th-TH", { year:"numeric", month:"long", day:"numeric" });
+  }
+  if (typeof value === "number") {
+    const d = new Date(Math.round((value - 25569) * 86400 * 1000));
+    return d.toLocaleDateString("th-TH", { year:"numeric", month:"long", day:"numeric" });
+  }
+  return value || "";
+}
+
 function getYouTubeID(url) {
-  if (!url) return "";
-  if (url.includes("youtu.be/"))
-    return url.split("youtu.be/")[1].split("?")[0];
-  if (url.includes("watch?v="))
-    return url.split("watch?v=")[1].split("&")[0];
-  if (url.includes("/live/"))
-    return url.split("/live/")[1].split("?")[0];
-  return "";
+  if (!url) return null;
+  const patterns = [
+    /youtu\.be\/([^?&]+)/,
+    /watch\?v=([^?&]+)/,
+    /\/live\/([^?&]+)/,
+    /embed\/([^?&]+)/
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m && m[1]) return m[1];
+  }
+  return null;
 }
 
 function renderPlayer(el, id) {
@@ -38,15 +55,18 @@ loadSermons().then(data => {
     box.innerHTML += `
       <div class="card ${i===0?'featured':''}">
         <h3>${s.title}</h3>
-        <p>${s.date} • ${s.preacher}</p>
+        <p>${formatDate(s.date)} • ${s.preacher}</p>
 
         ${id ? `
         <div class="video-thumb" onclick="renderPlayer(this,'${id}')">
           <img src="${thumb}" alt="">
           <div class="play">▶</div>
-        </div>` : ""}
+        </div>` : `
+        <div class="video-thumb no-video">
+          <div class="play">ไม่มีวิดีโอ</div>
+        </div>`}
 
-        <a href="sermon.html?title=${encodeURIComponent(s.title)}&date=${encodeURIComponent(s.date)}&preacher=${encodeURIComponent(s.preacher)}&doc=${encodeURIComponent(s.doc)}">
+        <a href="sermon.html?title=${encodeURIComponent(s.title)}&date=${encodeURIComponent(formatDate(s.date))}&preacher=${encodeURIComponent(s.preacher)}&doc=${encodeURIComponent(s.doc)}">
           📖 อ่านคำเทศนา
         </a>
       </div>`;

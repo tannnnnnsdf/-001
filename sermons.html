@@ -12,14 +12,27 @@
 
 <script src="data.js"></script>
 <script>
+function formatDate(value) {
+  if (typeof value === "string" && value.startsWith("Date")) {
+    const parts = value.match(/\d+/g);
+    const d = new Date(parts[0], parts[1], parts[2]);
+    return d.toLocaleDateString("th-TH", { year:"numeric", month:"long", day:"numeric" });
+  }
+  if (typeof value === "number") {
+    const d = new Date(Math.round((value - 25569) * 86400 * 1000));
+    return d.toLocaleDateString("th-TH", { year:"numeric", month:"long", day:"numeric" });
+  }
+  return value || "";
+}
+
 loadSermons().then(data => {
   const list = document.getElementById("list");
   data.forEach(s => {
     list.innerHTML += `
       <div class="card">
         <h3>${s.title}</h3>
-        <p>${s.date} • ${s.preacher}</p>
-        <a href="sermon.html?title=${encodeURIComponent(s.title)}&date=${encodeURIComponent(s.date)}&preacher=${encodeURIComponent(s.preacher)}&doc=${encodeURIComponent(s.doc)}">
+        <p>${formatDate(s.date)} • ${s.preacher}</p>
+        <a href="sermon.html?title=${encodeURIComponent(s.title)}&date=${encodeURIComponent(formatDate(s.date))}&preacher=${encodeURIComponent(s.preacher)}&doc=${encodeURIComponent(s.doc)}">
           📖 อ่านคำเทศนา
         </a>
         ${s.youtube ? `<a href="${s.youtube}" target="_blank">▶️ YouTube</a>` : ""}
