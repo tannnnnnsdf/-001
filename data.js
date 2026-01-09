@@ -1,5 +1,6 @@
 const SHEET_URL =
 "https://docs.google.com/spreadsheets/d/1x_Gb2U5vgI2aI6Bl78KrLZKOi23eX9fcJiZIPOBnTwA/gviz/tq?tqx=out:json";
+
 async function loadSermons() {
   const res = await fetch(SHEET_URL);
   const text = await res.text();
@@ -14,6 +15,6 @@ async function loadSermons() {
       show: r.c[4]?.v || "",
       doc: r.c[5]?.v || ""
     }))
-    .filter(r => (r.show || "").toString().toLowerCase().trim() === "yes")
+    .filter(r => (r.show || "").toLowerCase().trim() === "yes")
     .reverse();
 }
